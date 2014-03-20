@@ -1,14 +1,9 @@
-/*
- * File:   editorMachineTestClass.cpp
- * Author: johadunf
- *
- * Created on Mar 18, 2014, 5:22:59 PM
- */
 
-#include "editorMachineTestClass.h"
-#include "../editor/EditorMachine.h"
 #include <string>
-#include "../editor/EditorState.h"
+#include "editorMachineTestClass.h"
+
+#include "../lineedit/EditorMachine.h"
+#include "../lineedit/EditorState.h"
 
 
 CPPUNIT_TEST_SUITE_REGISTRATION(editorMachineTestClass);

@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "utils.h"
+#include "lineeditUtils.h"
 
 
 typedef std::vector<std::string> StringVector;
@@ -50,7 +50,10 @@ public:
     }
 
     void setCompletions(StringVector completions) {
-        this->completions = completions;
+        this->completions.clear();
+        for(unsigned int i=0; i < completions.size(); i++){
+            this->completions.push_back(completions[i]);
+        }
     }
 
     void addCompletion(std::string completion) {

@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include "EditorState.h"
-#include "utils.h"
+#include "lineeditUtils.h"
 
 
 typedef std::vector<EditorState*> StatePointer;
@@ -53,7 +53,7 @@ public:
      * @return boolean weather the input has added a new state
      */
     bool processInput(const char* buf) {
-
+        // todo: consider that user has deleted all or part of command line
         if (Utils().charLen(buf) <= 0) {
             return false;
         }
@@ -102,6 +102,10 @@ public:
 
     StatePointer getStateQueue() const {
         return queuedStates;
+    }
+    
+    EditorState* getCurrentState(){
+        return queuedStates.back();
     }
 
 private:

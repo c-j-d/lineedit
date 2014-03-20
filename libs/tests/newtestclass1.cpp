@@ -6,7 +6,7 @@
  */
 
 #include "newtestclass1.h"
-#include "../editor/EditorState.h"
+#include "../lineedit/EditorState.h"
 
 
 CPPUNIT_TEST_SUITE_REGISTRATION(newtestclass1);

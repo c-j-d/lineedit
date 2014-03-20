@@ -6,7 +6,7 @@
  */
 
 #include "utilsTestClass.h"
-#include "../editor/utils.h"
+#include "../lineedit/lineeditUtils.h"
 #include <string>
 
 

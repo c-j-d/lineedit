@@ -6,11 +6,10 @@
                    projectFiles="true">
     </logicalFolder>
     <logicalFolder name="libs" displayName="libs" projectFiles="true">
-      <logicalFolder name="editor" displayName="editor" projectFiles="true">
-        <itemPath>../libs/editor/EditorMachine.h</itemPath>
-        <itemPath>../libs/editor/EditorState.h</itemPath>
-        <itemPath>../libs/utils.h</itemPath>
-        <itemPath>../libs/editor/utils.h</itemPath>
+      <logicalFolder name="lineedit" displayName="lineedit" projectFiles="true">
+        <itemPath>../libs/lineedit/EditorMachine.h</itemPath>
+        <itemPath>../libs/lineedit/EditorState.h</itemPath>
+        <itemPath>../libs/lineedit/lineeditUtils.h</itemPath>
       </logicalFolder>
       <logicalFolder name="linenoise" displayName="linenoise" projectFiles="true">
         <itemPath>../libs/linenoise/linenoise.c</itemPath>
@@ -82,11 +81,11 @@
       </toolsSet>
       <compileType>
       </compileType>
-      <item path="../libs/editor/EditorMachine.h" ex="false" tool="3" flavor2="0">
+      <item path="../libs/lineedit/EditorMachine.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../libs/editor/EditorState.h" ex="false" tool="3" flavor2="0">
+      <item path="../libs/lineedit/EditorState.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../libs/editor/utils.h" ex="false" tool="3" flavor2="0">
+      <item path="../libs/lineedit/lineeditUtils.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../libs/linenoise/linenoise.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -128,8 +127,6 @@
       <item path="../libs/tests/utilsTestClass.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../libs/tests/utilsTestRunner.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../libs/utils.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -209,11 +206,11 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="../libs/editor/EditorMachine.h" ex="false" tool="3" flavor2="0">
+      <item path="../libs/lineedit/EditorMachine.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../libs/editor/EditorState.h" ex="false" tool="3" flavor2="0">
+      <item path="../libs/lineedit/EditorState.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="../libs/editor/utils.h" ex="false" tool="3" flavor2="0">
+      <item path="../libs/lineedit/lineeditUtils.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../libs/linenoise/linenoise.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -255,8 +252,6 @@
       <item path="../libs/tests/utilsTestClass.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../libs/tests/utilsTestRunner.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="../libs/utils.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="../main.cpp" ex="false" tool="1" flavor2="0">
       </item>
