@@ -31,9 +31,7 @@ class EditorMachine {
 public:
 
     EditorMachine() {
-
         defaultState = new StateIdle();
-
         this->reset();
     }
 
@@ -114,8 +112,6 @@ private:
         e->setSubject(subject);
         queuedStates.push_back(e);
     }
-
-
 };
 
 #endif	/* EDITORMACHINE_H */

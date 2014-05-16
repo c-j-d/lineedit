@@ -113,17 +113,22 @@
 #define strdup _strdup
 #define snprintf _snprintf
 #endif
+
+//    #define	STDIN_FILENO	0	/* Standard input.  */
+//    #define	STDOUT_FILENO	1	/* Standard output.  */
+//    #define	STDERR_FILENO	2	/* Standard error output.  */
+
 #else
-#include <termios.h>
-#include <sys/ioctl.h>
-#include <sys/poll.h>
-#define USE_TERMIOS
-#define HAVE_UNISTD_H
+    #include <termios.h>
+    #include <sys/ioctl.h>
+    #include <sys/poll.h>
+    #define USE_TERMIOS
+    #define HAVE_UNISTD_H
+#endif
+#ifdef HAVE_UNISTD_H
+    #include <unistd.h>
 #endif
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -138,6 +143,7 @@
 #define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
 #define LINENOISE_MAX_LINE 4096
 #define _USE_UTF8
+
 
 static linenoiseCharacterCallback *characterCallback[256] = {NULL};
 
@@ -187,6 +193,13 @@ struct current {
 
 static int fd_read(struct current *current);
 static int getWindowSize(struct current *current);
+
+/* Clear the screen. Used to handle ctrl+l */
+void linenoiseClearScreen(void) {
+    if (write(STDOUT_FILENO,"\x1b[H\x1b[2J",7) <= 0) {
+        /* nothing to do, just to avoid warning. */
+    }
+}
 
 void linenoiseHistoryFree(void) {
     if (history) {

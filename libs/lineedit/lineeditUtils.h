@@ -1,10 +1,3 @@
-/* 
- * File:   utils.h
- * Author: johadunf
- *
- * Created on March 18, 2014, 2:10 PM
- */
-
 #ifndef UTILS_H
 #define	UTILS_H
 
