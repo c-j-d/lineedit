@@ -48,6 +48,7 @@ int dotCallback(const char *buf, size_t len, char c) {
 int bracketCallback(const char *buf, size_t len, char c) {
 
     if (em.processInput(buf)) {
+        std::cout << "subject: " << em.getCurrentState()->getSubject() << std::endl;
         if (em.getCurrentState()->getSubject() == "funcX") {
             em.getCurrentState()->addCompletion("param1");
             em.getCurrentState()->addCompletion("param2");
