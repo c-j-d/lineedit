@@ -67,5 +67,6 @@ void linenoiseClearScreen(void);
 //static void linenoiseRefreshLine(const char* prompt);
 void linenoiceCursorToLeft(void);
 void linenoiceSetCursorPos(int x);
+void linenoiceAppendCommand(const char *cmd);
 
 #endif /* __LINENOISE_H */

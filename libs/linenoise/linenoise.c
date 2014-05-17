@@ -1622,3 +1622,7 @@ void linenoiceCursorToLeft(){
 void linenoiceSetCursorPos(int x){
     setCursorPos(_current, x);
 }
+
+void linenoiceAppendCommand(const char *cmd){
+    insert_chars(_current, _current->pos, cmd);
+}

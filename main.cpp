@@ -128,12 +128,8 @@ int escapeCallback(const char *buf, size_t len, char c) {
 /* callback for 'Ctrl + S' */
 int saveCallback(const char *buf, size_t len, char c) {
 
-    printf("\r\n%s\r\n", "in save callback");
-    printf("\r\n%s\r\n", "in save callback");
-    linenoiceSetCursorPos(10);
-    printf("%s\r\n", "in save callback");
-    printf("\r\n%s\r\n", "in save callback");
-    prompt = default_prompt;
+    linenoiceAppendCommand((const char*) "ny linje > ");
+    //line = (char*) "hej";
     return 0;
 
 }
@@ -214,7 +210,7 @@ int main(int argc, char **argv) {
         if (!strcmp(line, "clr")) {
             linenoiseClearScreen();
         } else {
-            // send command to Rev parser
+            std::cout << line << std::endl;
         }
 
         em.reset();
