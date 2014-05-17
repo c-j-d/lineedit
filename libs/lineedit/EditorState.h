@@ -113,14 +113,14 @@ public:
        if (type == this->type){ // cannot nest strings
            return false;
        }
-       return Utils().lastCharContains(cmd, hookChars.c_str());
+       return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
     virtual bool tryRelease(const char* cmd, StateType type) {
         if (type != this->type){ // cannot release unless current state is same type
             return false;
         }
-        return Utils().lastCharContains(cmd, releaseChars.c_str());
+        return LineEditUtils().lastCharContains(cmd, releaseChars.c_str());
     }
 
 };
@@ -137,14 +137,14 @@ public:
     
     virtual bool tryHook(const char* cmd, StateType type) {
         // brackets can be nested
-        return Utils().lastCharContains(cmd, hookChars.c_str());
+        return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
     virtual bool tryRelease(const char* cmd, StateType type) {
         if (type != this->type){ // cannot release unless current state is same type
             return false;
         }
-        return Utils().lastCharContains(cmd, releaseChars.c_str());
+        return LineEditUtils().lastCharContains(cmd, releaseChars.c_str());
     }
 };
 
@@ -162,7 +162,7 @@ public:
         if (type == this->type){ // cannot nest assignments
             return false;
         }
-        return Utils().lastCharContains(cmd, hookChars.c_str());
+        return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
     virtual bool tryRelease(const char* cmd, StateType type) {
@@ -187,7 +187,7 @@ public:
         if (type == this->type){ // cannot nest this state
             return false;
         }
-        return Utils().lastCharContains(cmd, hookChars.c_str());
+        return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
     virtual bool tryRelease(const char* cmd, StateType type) {

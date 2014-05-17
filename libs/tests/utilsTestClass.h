@@ -12,7 +12,8 @@
 
 class utilsTestClass : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(utilsTestClass);
-
+    
+    CPPUNIT_TEST(testReverseString);
     CPPUNIT_TEST(testCharLen);
     CPPUNIT_TEST(testContains);
     CPPUNIT_TEST(testGetTail);
@@ -28,6 +29,7 @@ public:
     void tearDown();
 
 private:
+    void testReverseString();
     void testCharLen();
     void testContains();
     void testGetTail();
