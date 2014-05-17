@@ -40,7 +40,11 @@ int dotCallback(const char *buf, size_t len, char c) {
             em.getCurrentState()->addCompletion("member3");
         }
     }
-    if (debug) printf("\n\r%s\n\r", em.getCurrentState()->getDescription().c_str());
+    if (debug) {
+        std::cout << em.getCurrentState()->getDescription() << std::endl;
+        linenoiceSetCursorPos(0);
+        std::cout << em.getCurrentState()->getDescription() << std::endl;
+    }
     return 0;
 }
 
@@ -104,8 +108,7 @@ int escapeCallback(const char *buf, size_t len, char c) {
                 printf("\n\rPlease enter the name of new file: ");
         }
 
-    }
-    else {
+    } else {
         if (mode == MODE_EDIT_FILE) {
             fprintf(stdout, "\n\rSave: y/n\n\r");
             if (tolower(getchar()) == 'y') {
@@ -126,6 +129,10 @@ int escapeCallback(const char *buf, size_t len, char c) {
 int saveCallback(const char *buf, size_t len, char c) {
 
     printf("\r\n%s\r\n", "in save callback");
+    printf("\r\n%s\r\n", "in save callback");
+    linenoiceSetCursorPos(10);
+    printf("%s\r\n", "in save callback");
+    printf("\r\n%s\r\n", "in save callback");
     prompt = default_prompt;
     return 0;
 
@@ -143,7 +150,7 @@ int clrCallback(const char *buf, size_t len, char c) {
 
 /* tab completion callback */
 
-void completion(const char *buf, linenoiseCompletions *lc) {
+void completion(const char *buf, linenoiseCompletions * lc) {
     int startPos = em.getLinePos();
     // discard extra spaces
     while (buf[startPos] == ' ') {
@@ -198,19 +205,18 @@ int main(int argc, char **argv) {
 
 
     while ((line = linenoise(prompt)) != NULL) {
-        
+
         linenoiseHistoryAdd(line); /* Add to the history. */
         linenoiseHistorySave("history.txt"); /* Save the history on disk. */
-              
-        
+
+
         // parse special commands        
-        if(!strcmp(line, "clr")){
-            linenoiseClearScreen();            
-        }
-        else{
+        if (!strcmp(line, "clr")) {
+            linenoiseClearScreen();
+        } else {
             // send command to Rev parser
         }
-        
+
         em.reset();
         free(line);
     }

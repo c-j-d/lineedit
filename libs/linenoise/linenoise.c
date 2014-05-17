@@ -191,6 +191,8 @@ struct current {
 #endif
 };
 
+static struct current *_current;
+
 static int fd_read(struct current *current);
 static int getWindowSize(struct current *current);
 
@@ -882,6 +884,7 @@ static void set_current(struct current *current, const char *str) {
     current->buf[current->bufmax - 1] = 0;
     current->len = strlen(current->buf);
     current->pos = current->chars = utf8_strlen(current->buf, current->len);
+    _current = current;
 }
 
 static int has_room(struct current *current, int bytes) {
@@ -1607,4 +1610,15 @@ char **linenoiseHistory(int *len) {
         *len = history_len;
     }
     return history;
+}
+
+
+struct current *linenoiceGetcurrent(){
+    return _current;
+}
+void linenoiceCursorToLeft(){
+    cursorToLeft(_current);
+}
+void linenoiceSetCursorPos(int x){
+    setCursorPos(_current, x);
 }
