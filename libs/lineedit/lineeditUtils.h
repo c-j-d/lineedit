@@ -4,8 +4,16 @@
 #include <string>
 #include <cctype>
 
-class Utils {
+class LineEditUtils {
 public:
+    
+    static std::string reverseString(std::string s) {
+        std::string result = ""; 
+        for (int i = 0; i < s.length(); i++) {
+            result = s[ i ] + result; 
+        }
+        return result;
+    }
 
     static unsigned int charLen(const char* buf) { // must be a null terminated char pointer
         int max = 10000;
@@ -28,10 +36,10 @@ public:
     }
 
     static bool lastCharContains(const char* buf, const char* test) {
-        if(charLen(buf) <= 0){
+        if (charLen(buf) <= 0) {
             return false;
         }
-        return contains(buf[charLen(buf) -1], test);
+        return contains(buf[charLen(buf) - 1], test);
     }
 
     static const char* getTail(const char* buf, int fromPosition) {
@@ -47,12 +55,9 @@ public:
         std::string s = "";
         bool foundStart = false;
 
-        // get rid of all non alpha in beginning, and all non alphaNumeric in end
-        // todo: consider space in beginning of subject
-        for (unsigned int i = 0; i < charLen(cmd); i++) {
+        for (unsigned int i = charLen(cmd) - 1; i >= 0; i--) {
             char c = cmd[i];
-
-            if(!foundStart && isalpha(c)){
+            if (!foundStart && isalpha(c)) {
                 foundStart = true;
             }
 
@@ -64,8 +69,10 @@ public:
                 }
             }
         }
-        return s.c_str();
+        return reverseString(s).c_str();
     }
+
+    
 };
 #endif	/* UTILS_H */
 

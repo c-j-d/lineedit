@@ -52,15 +52,15 @@ public:
      */
     bool processInput(const char* buf) {
         // todo: consider that user has deleted all or part of command line
-        if (Utils().charLen(buf) <= 0) {
+        if (LineEditUtils().charLen(buf) <= 0) {
             return false;
         }
 
         int _linePos = linePos;
-        std::string _cmd = Utils().getTail(buf, linePos); // previously unprocessed string
+        std::string _cmd = LineEditUtils().getTail(buf, linePos); // previously unprocessed string
         this->cmd = _cmd.c_str();
-        std::string subject = Utils().extractSubject(_cmd.c_str()); // might be handy
-        linePos = Utils().charLen(buf); // update line position
+        std::string subject = LineEditUtils().extractSubject(_cmd.c_str()); // might be handy
+        linePos = LineEditUtils().charLen(buf); // update line position
 
         StateType type = (queuedStates.back())->getType();
 
