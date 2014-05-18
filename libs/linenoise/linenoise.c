@@ -119,14 +119,14 @@
 //    #define	STDERR_FILENO	2	/* Standard error output.  */
 
 #else
-#include <termios.h>
-#include <sys/ioctl.h>
-#include <sys/poll.h>
-#define USE_TERMIOS
-#define HAVE_UNISTD_H
+    #include <termios.h>
+    #include <sys/ioctl.h>
+    #include <sys/poll.h>
+    #define USE_TERMIOS
+    #define HAVE_UNISTD_H
 #endif
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+    #include <unistd.h>
 #endif
 
 #include <stdlib.h>
@@ -195,12 +195,10 @@ static struct current *_current;
 
 static int fd_read(struct current *current);
 static int getWindowSize(struct current *current);
-static int callCharacterCallback(struct current *current, char c, int doRefreshLine);
-//static int callCharacterCallback(struct current *current, char c);
 
 /* Clear the screen. Used to handle ctrl+l */
 void linenoiseClearScreen(void) {
-    if (write(STDOUT_FILENO, "\x1b[H\x1b[2J", 7) <= 0) {
+    if (write(STDOUT_FILENO,"\x1b[H\x1b[2J",7) <= 0) {
         /* nothing to do, just to avoid warning. */
     }
 }
@@ -880,6 +878,7 @@ static void refreshLine(const char *prompt, struct current *current) {
     setCursorPos(current, pos + pchars + backup);
 }
 
+
 static void set_current(struct current *current, const char *str) {
     strncpy(current->buf, str, current->bufmax);
     current->buf[current->bufmax - 1] = 0;
@@ -1155,7 +1154,6 @@ process_char:
                 if (remove_char(current, current->pos - 1) == 1) {
                     refreshLine(current->prompt, current);
                 }
-                callCharacterCallback(current, c, 0);
                 break;
             case ctrl('D'): /* ctrl-d */
                 if (current->len == 0) {
@@ -1393,56 +1391,30 @@ process_char:
                 /* Force recalc of window size for serial terminals */
                 current->cols = 0;
                 refreshLine(current->prompt, current);
-                callCharacterCallback(current, c, 0);
                 break;
             default:
-                if (callCharacterCallback(current, c, 1) > 0) {
-                    /* Only tab is allowed without ^V */
-                    if (c == '\t' || c >= ' ') {
+
+                if (characterCallback[(int) c]) {
+                    if (c >= ' ') {
                         if (insert_char(current, current->pos, c) == 1) {
                             refreshLine(current->prompt, current);
                         }
-                    }   
+                    }
+                    characterCallback[(int) c](current->buf, current->len, c);
+
+                    continue;
                 }
 
-
-
-                //                if (characterCallback[(int) c]) {
-                //                    if (c >= ' ') {
-                //                        if (insert_char(current, current->pos, c) == 1) {
-                //                            refreshLine(current->prompt, current);
-                //                        }
-                //                    }
-                //                    characterCallback[(int) c](current->buf, current->len, c);
-                //
-                //                    continue;
-                //                }
-                //
-                //                /* Only tab is allowed without ^V */
-                //                if (c == '\t' || c >= ' ') {
-                //                    if (insert_char(current, current->pos, c) == 1) {
-                //                        refreshLine(current->prompt, current);
-                //                    }
-                //                }
+                /* Only tab is allowed without ^V */
+                if (c == '\t' || c >= ' ') {
+                    if (insert_char(current, current->pos, c) == 1) {
+                        refreshLine(current->prompt, current);
+                    }
+                }
                 break;
         }
     }
     return current->len;
-}
-
-static int callCharacterCallback(struct current *current, char c, int doRefreshLine) {
-    if (characterCallback[(int) c]) {
-        if (c >= ' ' && doRefreshLine > 0) {
-            if (insert_char(current, current->pos, c) == 1) {
-                refreshLine(current->prompt, current);
-            }
-        }
-        characterCallback[(int) c](current->buf, current->len, c);
-
-        return 0;
-    }
-    return 1;
-
 }
 
 int linenoiseColumns(void) {
@@ -1640,18 +1612,17 @@ char **linenoiseHistory(int *len) {
     return history;
 }
 
-struct current *linenoiceGetcurrent() {
+
+struct current *linenoiceGetcurrent(){
     return _current;
 }
-
-void linenoiceCursorToLeft() {
+void linenoiceCursorToLeft(){
     cursorToLeft(_current);
 }
-
-void linenoiceSetCursorPos(int x) {
+void linenoiceSetCursorPos(int x){
     setCursorPos(_current, x);
 }
 
-void linenoiceAppendCommand(const char *cmd) {
+void linenoiceAppendCommand(const char *cmd){
     insert_chars(_current, _current->pos, cmd);
 }
