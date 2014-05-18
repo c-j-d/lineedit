@@ -1154,7 +1154,7 @@ process_char:
                 if (remove_char(current, current->pos - 1) == 1) {
                     refreshLine(current->prompt, current);
                 }
-                break;
+                //break;
             case ctrl('D'): /* ctrl-d */
                 if (current->len == 0) {
                     /* Empty line, so EOF */
