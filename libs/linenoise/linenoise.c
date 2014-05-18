@@ -195,7 +195,8 @@ static struct current *_current;
 
 static int fd_read(struct current *current);
 static int getWindowSize(struct current *current);
-static void callCharacterCallback(struct current *current, char c);
+static int callCharacterCallback(struct current *current, char c, int doRefreshLine);
+//static int callCharacterCallback(struct current *current, char c);
 
 /* Clear the screen. Used to handle ctrl+l */
 void linenoiseClearScreen(void) {
@@ -1154,7 +1155,7 @@ process_char:
                 if (remove_char(current, current->pos - 1) == 1) {
                     refreshLine(current->prompt, current);
                 }
-                callCharacterCallback(current, c); 
+                callCharacterCallback(current, c, 0);
                 break;
             case ctrl('D'): /* ctrl-d */
                 if (current->len == 0) {
@@ -1392,10 +1393,19 @@ process_char:
                 /* Force recalc of window size for serial terminals */
                 current->cols = 0;
                 refreshLine(current->prompt, current);
-                callCharacterCallback(current, c);  
+                callCharacterCallback(current, c, 0);
                 break;
             default:
-                callCharacterCallback(current, c);   
+                if (callCharacterCallback(current, c, 1) > 0) {
+                    /* Only tab is allowed without ^V */
+                    if (c == '\t' || c >= ' ') {
+                        if (insert_char(current, current->pos, c) == 1) {
+                            refreshLine(current->prompt, current);
+                        }
+                    }   
+                }
+
+
 
                 //                if (characterCallback[(int) c]) {
                 //                    if (c >= ' ') {
@@ -1420,24 +1430,19 @@ process_char:
     return current->len;
 }
 
-static void callCharacterCallback(struct current *current, char c) {
+static int callCharacterCallback(struct current *current, char c, int doRefreshLine) {
     if (characterCallback[(int) c]) {
-        if (c >= ' ') {
+        if (c >= ' ' && doRefreshLine > 0) {
             if (insert_char(current, current->pos, c) == 1) {
                 refreshLine(current->prompt, current);
             }
         }
         characterCallback[(int) c](current->buf, current->len, c);
 
-        return;
+        return 0;
     }
+    return 1;
 
-    /* Only tab is allowed without ^V */
-    if (c == '\t' || c >= ' ') {
-        if (insert_char(current, current->pos, c) == 1) {
-            refreshLine(current->prompt, current);
-        }
-    }
 }
 
 int linenoiseColumns(void) {
