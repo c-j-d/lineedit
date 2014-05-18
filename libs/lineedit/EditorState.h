@@ -141,6 +141,7 @@ public:
     }
 
     virtual bool tryRelease(const char* cmd, StateType type) {
+        
         if (type != this->type){ // cannot release unless current state is same type
             return false;
         }

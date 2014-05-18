@@ -21,6 +21,7 @@ enum modeOption {
 };
 modeOption mode = MODE_DEFAULT;
 
+const char* nl = (char*) "\n\r";
 const char* default_prompt = (char*) "hello, enter some code > ";
 const char* esc_prompt = (char*) "> ";
 const char* prompt = default_prompt;
@@ -144,6 +145,13 @@ int clrCallback(const char *buf, size_t len, char c) {
 
 }
 
+/* callback for back space */
+int backspaceCallback(const char *buf, size_t len, char c) {
+    std::cout << nl << "backspace" << nl << std::endl;
+    std::cout.flush();
+    return 0;
+}
+
 /* tab completion callback */
 
 void completion(const char *buf, linenoiseCompletions * lc) {
@@ -171,6 +179,10 @@ void completion(const char *buf, linenoiseCompletions * lc) {
 }
 
 int main(int argc, char **argv) {
+    
+//    std::string foo = "foo";
+//    std::cout << foo.rfind("o") << std::endl << foo.rfind("oo") << std::endl << foo.rfind("f") << std::endl << foo.rfind("b") << std::endl;
+//    exit(9);
 
     // add default completions to default state
     em.getCurrentState()->addCompletion("objX");
@@ -191,6 +203,12 @@ int main(int argc, char **argv) {
     linenoiseSetCharacterCallback(saveCallback, ctrl('S'));
     linenoiseSetCharacterCallback(escapeCallback, 27);
     linenoiseSetCharacterCallback(clrCallback, ctrl('L'));
+    
+    linenoiseSetCharacterCallback(backspaceCallback, '\b');
+    linenoiseSetCharacterCallback(backspaceCallback, (char)8);
+    linenoiseSetCharacterCallback(backspaceCallback, 8);
+    linenoiseSetCharacterCallback(backspaceCallback, ctrl('H'));
+    linenoiseSetCharacterCallback(backspaceCallback, ctrl('h'));
 
     /* Load history from file. The history file is just a plain text file
      * where entries are separated by newlines. */

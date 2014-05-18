@@ -6,11 +6,11 @@
 
 class LineEditUtils {
 public:
-    
+
     static std::string reverseString(std::string s) {
-        std::string result = ""; 
+        std::string result = "";
         for (int i = 0; i < s.length(); i++) {
-            result = s[ i ] + result; 
+            result = s[ i ] + result;
         }
         return result;
     }
@@ -55,7 +55,7 @@ public:
         std::string s = "";
         bool foundStart = false;
 
-        for ( int i = charLen(cmd) - 1; i >= 0; i--) {
+        for (int i = charLen(cmd) - 1; i >= 0; i--) {
             char c = cmd[i];
             if (!foundStart && isalpha(c)) {
                 foundStart = true;
@@ -72,7 +72,7 @@ public:
         return reverseString(s).c_str();
     }
 
-    
+
 };
 #endif	/* UTILS_H */
 
