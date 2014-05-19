@@ -34,7 +34,7 @@ public:
      * @param type
      * @return 
      */
-    virtual bool tryRelease(const char* cmd, StateType type) = 0;
+    virtual bool tryRelease(std::string cmd, StateType type) = 0;
 
     /**
      * Indicates if the cmd input triggers this state
@@ -42,7 +42,7 @@ public:
      * @param type
      * @return 
      */
-    virtual bool tryHook(const char* cmd, StateType type) = 0;
+    virtual bool tryHook(std::string cmd, StateType type) = 0;
     
     /**
      * Tells if a deleted character should cancel this state
@@ -96,11 +96,11 @@ public:
         type = ST_IDLE;
     }
 
-    virtual bool tryHook(const char* cmd, StateType type) {
+    virtual bool tryHook(std::string cmd, StateType type) {
         return false; // cannot be triggered
     }
 
-    virtual bool tryRelease(const char* cmd, StateType type) {
+    virtual bool tryRelease(std::string cmd, StateType type) {
         return false; // cannot be released
     }
     
@@ -120,14 +120,14 @@ public:
         type = ST_STRING;
     }
 
-    virtual bool tryHook(const char* cmd, StateType type) {
+    virtual bool tryHook(std::string cmd, StateType type) {
        if (type == this->type){ // cannot nest strings
            return false;
        }
        return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
-    virtual bool tryRelease(const char* cmd, StateType type) {
+    virtual bool tryRelease(std::string cmd, StateType type) {
         if (type != this->type){ // cannot release unless current state is same type
             return false;
         }
@@ -153,12 +153,12 @@ public:
         type = ST_BRACKET;
     }
     
-    virtual bool tryHook(const char* cmd, StateType type) {
+    virtual bool tryHook(std::string cmd, StateType type) {
         // brackets can be nested
         return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
-    virtual bool tryRelease(const char* cmd, StateType type) {       
+    virtual bool tryRelease(std::string cmd, StateType type) {       
         if (type != this->type){ // cannot release unless current state is same type
             return false;
         }
@@ -183,14 +183,14 @@ public:
         type = ST_ASSIGNMENT;
     }
 
-    virtual bool tryHook(const char* cmd, StateType type) {
+    virtual bool tryHook(std::string cmd, StateType type) {
         if (type == this->type){ // cannot nest assignments
             return false;
         }
         return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
-    virtual bool tryRelease(const char* cmd, StateType type) {
+    virtual bool tryRelease(std::string cmd, StateType type) {
         if (type != this->type){ // cannot release unless current state is same type
             return false;
         }
@@ -215,14 +215,14 @@ public:
         type = ST_LISTMEMBERS;
     }
 
-    virtual bool tryHook(const char* cmd, StateType type) {
+    virtual bool tryHook(std::string cmd, StateType type) {
         if (type == this->type){ // cannot nest this state
             return false;
         }
         return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
-    virtual bool tryRelease(const char* cmd, StateType type) {
+    virtual bool tryRelease(std::string cmd, StateType type) {
         if (type != this->type){ // cannot release unless current state is same type
             return false;
         }

@@ -12,12 +12,9 @@
 
 class utilsTestClass : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(utilsTestClass);
-    
+
     CPPUNIT_TEST(testReverseString);
-    CPPUNIT_TEST(testCharLen);
     CPPUNIT_TEST(testContains);
-    CPPUNIT_TEST(testGetTail);
-    CPPUNIT_TEST(testPopChar);
     CPPUNIT_TEST(testLastCharContains);
     CPPUNIT_TEST(testExtractSubject);
 
@@ -31,10 +28,7 @@ public:
 
 private:
     void testReverseString();
-    void testCharLen();
     void testContains();
-    void testGetTail();
-    void testPopChar();
     void testLastCharContains();
     void testExtractSubject();
 

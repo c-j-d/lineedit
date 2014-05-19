@@ -29,7 +29,7 @@ public:
      */
     void reset(void) { // resets to default state (new line)
         linePos = 0;
-        cmd = 0;
+        cmd = "";
         queuedStates->clear();
         queuedStates->push_back(defaultState);
     }
@@ -38,7 +38,7 @@ public:
         if(linePos <= 0){
             return;
         }
-        const char c = LineEditUtils::getTail(cmd);
+        const char c = cmd.at(cmd.size() -1);
         StateType type = queuedStates->back()->getType();
         
         // cancel state
@@ -46,11 +46,9 @@ public:
             queuedStates->pop_back();            
         }
         
-        cmd = LineEditUtils::popChar(cmd);
+        cmd = cmd.substr(0, cmd.size() -1);
         
-        if(LineEditUtils::charLen(cmd) < linePos){
-            linePos = LineEditUtils::charLen(cmd);
-        }
+        linePos --;
         
     }
     /**
@@ -58,37 +56,36 @@ public:
      * @param buf user input, must be null terminated
      * @return boolean weather the input has added a new state
      */
-    bool processInput(const char* buf) {
-        // todo: consider that user has deleted all or part of command line
-        if (LineEditUtils().charLen(buf) <= 0) {
+    bool processInput(std::string buf) {
+        
+        if (buf.size() <= 0) {
             return false;
         }
 
-        int _linePos = linePos;
-        std::string _cmd = LineEditUtils().getTail(buf, linePos); // previously unprocessed string
-        this->cmd = _cmd.c_str();
-        std::string subject = LineEditUtils().extractSubject(_cmd.c_str()); // might be handy
-        linePos = LineEditUtils().charLen(buf); // update line position
+        // extract the unprocessed string
+        cmd = buf.substr(linePos, buf.size());
+        std::string subject = LineEditUtils().extractSubject(cmd); 
+        linePos = buf.size(); // update line position
 
         StateType type = (queuedStates->back())->getType();
 
         // release state
-        if (queuedStates->back()->tryRelease(_cmd.c_str(), type)) {
+        if (queuedStates->back()->tryRelease(cmd, type)) {
             queuedStates->pop_back();
             //return false;  
         }
 
         // set new state
-        if (stateInAssignment.tryHook(_cmd.c_str(), type)) {
+        if (stateInAssignment.tryHook(cmd, type)) {
             addState(new StateInAssignment(), subject);
 
-        } else if (stateInBrackets.tryHook(_cmd.c_str(), type)) {
+        } else if (stateInBrackets.tryHook(cmd, type)) {
             addState(new StateInBrackets(), subject);
 
-        } else if (stateInString.tryHook(_cmd.c_str(), type)) {
+        } else if (stateInString.tryHook(cmd, type)) {
             addState(new StateInString(), subject);
 
-        } else if (stateListingMembers.tryHook(_cmd.c_str(), type)) {
+        } else if (stateListingMembers.tryHook(cmd, type)) {
             addState(new StateListingMembers(), subject);
 
         } else {
@@ -98,7 +95,7 @@ public:
         return true;
     }
 
-    const char* getCmd() const {
+    std::string getCmd() const {
         return cmd;
     }
 
@@ -117,7 +114,7 @@ public:
 private:
 
     unsigned int linePos; // position on command line that was last processed
-    const char* cmd; // the part of the command line that are currently being processed
+    std::string cmd; // the part of the command line that are currently being processed
 
     StatePointer *queuedStates; // states can overlap, and are stored in this queue
 

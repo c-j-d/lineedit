@@ -9,18 +9,13 @@ public:
 
     static std::string reverseString(std::string s) {
         std::string result = "";
-        for (int i = 0; i < s.length(); i++) {
-            result = s[ i ] + result;
+        for (int i = 0; i < s.size(); i++) {
+            result = s.at(i) + result;
         }
         return result;
     }
 
-    static unsigned int charLen(const char* buf) { // must be a null terminated char pointer
-        std::string s(buf);
-        return s.size();
-    }
-
-    static bool contains(char c, const char* buf) {
+    static bool contains(char c, std::string buf) {
         std::string s(buf);        
         for (unsigned int i = 0; i < s.size(); i++) {
             if (s.at(i) == c) {
@@ -30,46 +25,19 @@ public:
         return false;
     }
 
-    static bool lastCharContains(const char* buf, const char* test) {
-        if (charLen(buf) <= 0) {
+    static bool lastCharContains(std::string buf, std::string test) {
+        if (buf.size() <= 0) {
             return false;
         }
-        return contains(buf[charLen(buf) - 1], test);
+        return contains(buf.at(buf.size() -1), test);
     }
     
-    static const char* popChar(const char* buf){
-        std::string s(buf);
-        if(s.size() <= 1){
-            return s.c_str();
-        }
-        return s.substr(0, s.size()-1).c_str();
-    }
-    
-    /**
-     * Get last char
-     * @param buf
-     * @return 
-     */
-    static const char getTail(const char* buf){
-        std::string s(buf);
-        return s.at(s.size()-1);
-    }
-
-    static const char* getTail(const char* buf, int fromPosition) {
-        std::string tmp;
-        for (int i = fromPosition; i < charLen(buf); i++) {
-            tmp += buf[i];
-        }
-
-        return tmp.c_str();
-    }
-
-    static const char* extractSubject(const char* cmd) {
+    static std::string extractSubject(std::string cmd) {
         std::string s = "";
         bool foundStart = false;
 
-        for (int i = charLen(cmd) - 1; i >= 0; i--) {
-            char c = cmd[i];
+        for (int i = cmd.size() - 1; i >= 0; i--) {
+            char c = cmd.at(i);
             if (!foundStart && isalpha(c)) {
                 foundStart = true;
             }
@@ -82,7 +50,7 @@ public:
                 }
             }
         }
-        return reverseString(s).c_str();
+        return reverseString(s);
     }
 
 

@@ -59,7 +59,7 @@ void editorMachineTestClass::testProcessInput() {
     
     /***************** bogus test **********************************/
     buf = "bogus";
-    CPPUNIT_ASSERT(!editorMachine.processInput(buf.c_str())); // shouldn't change state
+    CPPUNIT_ASSERT(!editorMachine.processInput(buf)); // shouldn't change state
     StateType st = ST_IDLE;
     StateType rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
@@ -68,7 +68,7 @@ void editorMachineTestClass::testProcessInput() {
     /***************** function test *******************************/
     // input a function
     buf += " funcX(";
-    CPPUNIT_ASSERT(editorMachine.processInput(buf.c_str())); // should change state
+    CPPUNIT_ASSERT(editorMachine.processInput(buf)); // should change state
     st = ST_BRACKET;
     rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
@@ -79,7 +79,7 @@ void editorMachineTestClass::testProcessInput() {
 
     // simulate end of function
     buf += " parameterValue )";
-    CPPUNIT_ASSERT(!editorMachine.processInput(buf.c_str())); // should release state back to idle
+    CPPUNIT_ASSERT(!editorMachine.processInput(buf)); // should release state back to idle
     st = ST_IDLE;
     rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
@@ -88,7 +88,7 @@ void editorMachineTestClass::testProcessInput() {
     /***************** plain brackets test *********************/
     // just input a plain bracket.
     buf += " (";
-    CPPUNIT_ASSERT(editorMachine.processInput(buf.c_str())); // should change state
+    CPPUNIT_ASSERT(editorMachine.processInput(buf)); // should change state
     st = ST_BRACKET;
     rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
@@ -100,20 +100,20 @@ void editorMachineTestClass::testProcessInput() {
     
     /****************** nested brackets test *****************************************/    
     buf += " (";
-    CPPUNIT_ASSERT(editorMachine.processInput(buf.c_str())); // should change state, should be two levels of bracket state now
+    CPPUNIT_ASSERT(editorMachine.processInput(buf)); // should change state, should be two levels of bracket state now
     
     st = ST_BRACKET;
     rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);    
     
     buf += " foo )";
-    CPPUNIT_ASSERT(!editorMachine.processInput(buf.c_str())); // exit first parenthesis
+    CPPUNIT_ASSERT(!editorMachine.processInput(buf)); // exit first parenthesis
     st = ST_BRACKET;
     rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
     
     buf += " foo )";
-    CPPUNIT_ASSERT(!editorMachine.processInput(buf.c_str())); // exit second parenthesis
+    CPPUNIT_ASSERT(!editorMachine.processInput(buf)); // exit second parenthesis
     st = ST_IDLE;
     rSt = (editorMachine.getCurrentState())->getType();  // should have gotten back to idle state
     CPPUNIT_ASSERT_EQUAL(st, rSt);
@@ -148,7 +148,7 @@ void editorMachineTestClass::testDeleteChar() {
     editorMachine.processInput("func(");
     
     t = ST_BRACKET;
-    rt = (editorMachine.getCurrentState())->getType();
+    rt = editorMachine.getCurrentState()->getType();
     CPPUNIT_ASSERT_EQUAL(t, rt);
     unsigned int linePos = editorMachine.getLinePos();
     
@@ -159,7 +159,7 @@ void editorMachineTestClass::testDeleteChar() {
     CPPUNIT_ASSERT_EQUAL(t, rt);    
     CPPUNIT_ASSERT_EQUAL(linePos -1 , editorMachine.getLinePos());
     cmd  = "func";
-    CPPUNIT_ASSERT_EQUAL(cmd, std::string(editorMachine.getCmd()));
+    CPPUNIT_ASSERT_EQUAL(cmd, editorMachine.getCmd());
     
 }
 
