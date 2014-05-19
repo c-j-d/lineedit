@@ -46,8 +46,7 @@ public:
 
         // cancel state
         if (queuedStates->back()->tryCancel(c, type)) {
-            writeMessage("cancel", queuedStates->back());
-            queuedStates->pop_back();
+            cancelState(queuedStates->back());
             linePos.pop_back();
         }
 
@@ -69,15 +68,14 @@ public:
         // extract the unprocessed string
         cmd = buf.substr(linePos.back(), buf.size());
         std::string subject = LineEditUtils().extractSubject(cmd);
-        
+
 
         StateType type = (queuedStates->back())->getType();
         bool stateReleased = false;
 
         // release state
         if (queuedStates->back()->tryRelease(cmd, type)) {
-            writeMessage("release", queuedStates->back());
-            queuedStates->pop_back();
+            releaseState(queuedStates->back());
             stateReleased = true;
         }
 
@@ -100,8 +98,8 @@ public:
         }
 
         // update linePos if any change in state happened
-        if(stateReleased || stateTriggered){
-            linePos.push_back(buf.size()); 
+        if (stateReleased || stateTriggered) {
+            linePos.push_back(buf.size());
         }
 
         // return true only if new state was added
@@ -123,8 +121,8 @@ public:
     EditorState* getCurrentState() {
         return queuedStates->back();
     }
-    
-    std::string getMessage(){
+
+    std::string getMessage() {
         return message;
     }
 
@@ -144,10 +142,10 @@ private:
     StateInBrackets stateInBrackets;
     StateInString stateInString;
     StateListingMembers stateListingMembers;
-    
-    void writeMessage(std::string m, EditorState *state){
+
+    void writeMessage(std::string m, EditorState *state) {
         std::string tab = "";
-        for(int i = 0; i < queuedStates->size(); i++){
+        for (int i = 0; i < queuedStates->size(); i++) {
             tab.append("..");
         }
         //message.append(tab).append(state->getMessage()).append(nl);
@@ -159,6 +157,16 @@ private:
         e->setSubject(subject);
         queuedStates->push_back(e);
         writeMessage("add", e);
+    }
+
+    void releaseState(EditorState* e) {        
+        queuedStates->pop_back();
+        writeMessage("release", e);
+    }
+    
+    void cancelState(EditorState* e) {        
+        queuedStates->pop_back();
+        writeMessage("cancel", e);
     }
 };
 
