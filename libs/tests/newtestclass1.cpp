@@ -104,6 +104,7 @@ void newtestclass1::testTryHookBrackets() {
     CPPUNIT_ASSERT(!stateInBrackets.tryHook("func ", ST_IDLE));
     CPPUNIT_ASSERT(!stateInBrackets.tryHook("func ", ST_BRACKET));
 
+    CPPUNIT_ASSERT(!stateInBrackets.tryHook("(", ST_STRING)); // do not trigger when in a string state
 
 }
 
@@ -126,10 +127,12 @@ void newtestclass1::testTryCancelBrackets() {
 void newtestclass1::testTryHookListMembers() {
     StateListingMembers stateListingMembers;
 
-    CPPUNIT_ASSERT(stateListingMembers.tryHook("obj.", ST_STRING));
+    CPPUNIT_ASSERT(stateListingMembers.tryHook("obj.", ST_IDLE));
     CPPUNIT_ASSERT(!stateListingMembers.tryHook("obj", ST_LISTMEMBERS));
     
     CPPUNIT_ASSERT(!stateListingMembers.tryHook("obj.", ST_LISTMEMBERS)); // no nesting
+    
+    CPPUNIT_ASSERT(!stateListingMembers.tryHook(".", ST_STRING)); // do not trigger when in a string state
 }
 
 void newtestclass1::testTryReleaseListMembers() {
