@@ -11,6 +11,7 @@ extern "C" {
 #include "libs/lineedit/EditorMachine.h"
 #include "libs/lineedit/EditorState.h"
 #include "libs/lineedit/lineeditUtils.h"
+#include "Observer.h"
 
 #define ctrl(C) ((C) - '@')
 
@@ -41,11 +42,7 @@ int dotCallback(const char *buf, size_t len, char c) {
             em.getCurrentState()->addCompletion("member3");
         }
     }
-    if (debug) {
-        std::cout << em.getCurrentState()->getDescription() << std::endl;
-        linenoiceSetCursorPos(0);
-        std::cout << em.getCurrentState()->getDescription() << std::endl;
-    }
+
     return 0;
 }
 
@@ -53,14 +50,14 @@ int dotCallback(const char *buf, size_t len, char c) {
 int bracketCallback(const char *buf, size_t len, char c) {
 
     if (em.processInput(buf)) {
-        std::cout << "subject: " << em.getCurrentState()->getSubject() << std::endl;
+       
         if (em.getCurrentState()->getSubject() == "funcX") {
             em.getCurrentState()->addCompletion("param1");
             em.getCurrentState()->addCompletion("param2");
             em.getCurrentState()->addCompletion("param3");
         }
     }
-    if (debug) printf("\n\r%s\n\r", em.getCurrentState()->getDescription().c_str());
+
 
     return 0;
 }
@@ -74,7 +71,7 @@ int assignCallback(const char *buf, size_t len, char c) {
             em.getCurrentState()->addCompletion("obj3");
         }
     }
-    if (debug) printf("\n\r%s\n\r", em.getCurrentState()->getDescription().c_str());
+
     return 0;
 }
 
@@ -88,51 +85,31 @@ int stringCallback(const char *buf, size_t len, char c) {
             em.getCurrentState()->addCompletion("file3");
         }
     }
-    if (debug) printf("\r\n%s\n\r", em.getCurrentState()->getDescription().c_str());
+
     return 0;
 
 }
 
-/* callback for 'ESC' */
 int escapeCallback(const char *buf, size_t len, char c) {
 
-    if (mode == MODE_DEFAULT) {
-        mode = MODE_CHOOSE;
+    linenoiseClearScreen();
 
-        printf("\n\rEnter your choise, ESC again to exit this menu:\n\r%s", esc_prompt);
-        printf("\n\r'n' : Create a new file\n\r%s", esc_prompt);
+    linenoiceSetCursorPos(0);
 
-        char c = getchar();
-        switch (c) {
-            case 'n':
-                mode = MODE_NEW_FILE;
-                printf("\n\rPlease enter the name of new file: ");
-        }
 
-    } else {
-        if (mode == MODE_EDIT_FILE) {
-            fprintf(stdout, "\n\rSave: y/n\n\r");
-            if (tolower(getchar()) == 'y') {
-                fprintf(stdout, "Saving file...");
-            } else {
-                fprintf(stdout, "Discarding file ...");
-            }
-        }
-    }
 
-    fflush(stdout);
+    std::cout << nl << "Editor state" << nl;
+    std::cout.flush();
+    std::cout << em.getMessage() << nl;
+    std::cout.flush();
+
+
+    // restore prompt
+    linenoiceSetCursorPos(0);
+    std::cout << nl << nl << prompt << buf;
+    std::cout.flush();
 
     return 0;
-
-}
-
-/* callback for 'Ctrl + S' */
-int saveCallback(const char *buf, size_t len, char c) {
-
-    linenoiceAppendCommand((const char*) "ny linje > ");
-    //line = (char*) "hej";
-    return 0;
-
 }
 
 /* callback for 'Ctrl + L' */
@@ -147,8 +124,17 @@ int clrCallback(const char *buf, size_t len, char c) {
 
 /* callback for back space */
 int backspaceCallback(const char *buf, size_t len, char c) {
-    std::cout << nl << "backspace" << nl << std::endl;
-    std::cout.flush();
+    em.deleteChar();
+    return 0;
+
+}
+
+int quotationCallback(const char *buf, size_t len, char c) {
+
+    if (em.processInput(buf)) {
+
+
+    }
     return 0;
 }
 
@@ -180,35 +166,31 @@ void completion(const char *buf, linenoiseCompletions * lc) {
 
 int main(int argc, char **argv) {
     
-//    std::string foo = "foo";
-//    std::cout << foo.rfind("o") << std::endl << foo.rfind("oo") << std::endl << foo.rfind("f") << std::endl << foo.rfind("b") << std::endl;
-//    exit(9);
+    EditorMachineObserver *observer = new Observer();
+    em.setObserver(observer);
 
     // add default completions to default state
     em.getCurrentState()->addCompletion("objX");
     em.getCurrentState()->addCompletion("funcX");
 
-    printf("term: %s", getenv("term"));
-
     char *prgname = argv[0];
 
-
-    /* Set callback functions*/
+    /* Set tab completion callback */
     linenoiseSetCompletionCallback(completion);
+
+    /* Set character callback functions*/
     linenoiseSetCharacterCallback(dotCallback, '.');
-    linenoiseSetCharacterCallback(bracketCallback, '(');
     linenoiseSetCharacterCallback(bracketCallback, ')');
+    linenoiseSetCharacterCallback(bracketCallback, '(');
     linenoiseSetCharacterCallback(assignCallback, '=');
-    linenoiseSetCharacterCallback(stringCallback, '"');
-    linenoiseSetCharacterCallback(saveCallback, ctrl('S'));
+    linenoiseSetCharacterCallback(quotationCallback, '"');
+    //linenoiseSetCharacterCallback(listSeparatorCallback, ',');
+
     linenoiseSetCharacterCallback(escapeCallback, 27);
-    linenoiseSetCharacterCallback(clrCallback, ctrl('L'));
-    
     linenoiseSetCharacterCallback(backspaceCallback, '\b');
-    linenoiseSetCharacterCallback(backspaceCallback, (char)8);
     linenoiseSetCharacterCallback(backspaceCallback, 8);
-    linenoiseSetCharacterCallback(backspaceCallback, ctrl('H'));
-    linenoiseSetCharacterCallback(backspaceCallback, ctrl('h'));
+    linenoiseSetCharacterCallback(backspaceCallback, (char)8);
+
 
     /* Load history from file. The history file is just a plain text file
      * where entries are separated by newlines. */
@@ -228,7 +210,8 @@ int main(int argc, char **argv) {
         if (!strcmp(line, "clr")) {
             linenoiseClearScreen();
         } else {
-            std::cout << line << std::endl;
+            std::cout << line << nl;
+            std::cout.flush();
         }
 
         em.reset();

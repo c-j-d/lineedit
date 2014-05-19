@@ -8,6 +8,8 @@
 
 #include "EditorState.h"
 #include "lineeditUtils.h"
+#include "EditorMachineObserver.h"
+
 
 
 typedef std::vector<EditorState*> StatePointer;
@@ -125,8 +127,13 @@ public:
     std::string getMessage() {
         return message;
     }
+    
+    void setObserver(EditorMachineObserver *observer){
+        this->observer = observer;
+    }
 
 private:
+    EditorMachineObserver *observer;
     std::string nl;
     std::string message;
     std::vector<int> linePos; // position on command line that was last processed
@@ -157,16 +164,19 @@ private:
         e->setSubject(subject);
         queuedStates->push_back(e);
         writeMessage("add", e);
+        observer->eventStateChanged();
     }
 
     void releaseState(EditorState* e) {        
         queuedStates->pop_back();
         writeMessage("release", e);
+        observer->eventStateChanged();
     }
     
     void cancelState(EditorState* e) {        
         queuedStates->pop_back();
         writeMessage("cancel", e);
+        observer->eventStateChanged();
     }
 };
 

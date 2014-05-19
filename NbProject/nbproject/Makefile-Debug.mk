@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/1472/Observer.o \
 	${OBJECTDIR}/_ext/414208620/linenoise.o \
 	${OBJECTDIR}/_ext/414208620/utf8.o \
 	${OBJECTDIR}/_ext/1200001932/pugixml.o \
@@ -72,6 +73,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nbproject: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/nbproject ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/_ext/1472/Observer.o: ../Observer.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1472
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1472/Observer.o ../Observer.cpp
 
 ${OBJECTDIR}/_ext/414208620/linenoise.o: ../libs/linenoise/linenoise.c 
 	${MKDIR} -p ${OBJECTDIR}/_ext/414208620
@@ -146,6 +152,19 @@ ${TESTDIR}/_ext/1357304591/utilsTestRunner.o: ../libs/tests/utilsTestRunner.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -I. `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/_ext/1357304591/utilsTestRunner.o ../libs/tests/utilsTestRunner.cpp
 
+
+${OBJECTDIR}/_ext/1472/Observer_nomain.o: ${OBJECTDIR}/_ext/1472/Observer.o ../Observer.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1472
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/_ext/1472/Observer.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/_ext/1472/Observer_nomain.o ../Observer.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/_ext/1472/Observer.o ${OBJECTDIR}/_ext/1472/Observer_nomain.o;\
+	fi
 
 ${OBJECTDIR}/_ext/414208620/linenoise_nomain.o: ${OBJECTDIR}/_ext/414208620/linenoise.o ../libs/linenoise/linenoise.c 
 	${MKDIR} -p ${OBJECTDIR}/_ext/414208620

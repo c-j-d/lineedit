@@ -4,10 +4,12 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>../Observer.h</itemPath>
     </logicalFolder>
     <logicalFolder name="libs" displayName="libs" projectFiles="true">
       <logicalFolder name="lineedit" displayName="lineedit" projectFiles="true">
         <itemPath>../libs/lineedit/EditorMachine.h</itemPath>
+        <itemPath>../libs/lineedit/EditorMachineObserver.h</itemPath>
         <itemPath>../libs/lineedit/EditorState.h</itemPath>
         <itemPath>../libs/lineedit/lineeditUtils.h</itemPath>
       </logicalFolder>
@@ -30,6 +32,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>../Observer.cpp</itemPath>
       <itemPath>../main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -81,7 +84,16 @@
       </toolsSet>
       <compileType>
       </compileType>
+      <item path="../Observer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../Observer.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../libs/lineedit/EditorMachine.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../libs/lineedit/EditorMachineObserver.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../libs/lineedit/EditorState.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -206,7 +218,16 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="../Observer.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="../Observer.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="../libs/lineedit/EditorMachine.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="../libs/lineedit/EditorMachineObserver.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="../libs/lineedit/EditorState.h" ex="false" tool="3" flavor2="0">
       </item>
