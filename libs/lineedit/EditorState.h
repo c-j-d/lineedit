@@ -17,8 +17,9 @@ enum StateType {
 class EditorState {
 public:
 
-    EditorState(void) {
-
+    EditorState() {
+        message = "";
+        nl = "\n";
     }
 
     std::string getDescription() {
@@ -76,6 +77,10 @@ public:
         return subject;
     }
 
+    std::string getMessage() const {
+        return message;
+    }
+
 protected:
 
     StringVector completions;
@@ -85,14 +90,15 @@ protected:
     std::string subject; /** for example the function name **/
     std::string description;
     StateType type;
-
+    std::string message;
+    std::string nl;
 
 };
 
 class StateIdle : public EditorState {
 public:
 
-    StateIdle() {
+    StateIdle() : EditorState() {
         description = "inIdle";
         type = ST_IDLE;
     }
@@ -114,7 +120,7 @@ public:
 class StateInString : public EditorState {
 public:
 
-    StateInString() {
+    StateInString() : EditorState() {
         hookChars = "\"";
         releaseChars = "\"";
         description = "inString";
@@ -125,21 +131,33 @@ public:
         if (type == this->type) { // cannot nest strings
             return false;
         }
-        return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
+        if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
+            message.append("hook-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 
     virtual bool tryRelease(std::string cmd, StateType type) {
         if (type != this->type) { // cannot release unless current state is same type
             return false;
         }
-        return LineEditUtils().lastCharContains(cmd, releaseChars.c_str());
+        if (LineEditUtils().lastCharContains(cmd, releaseChars.c_str())) {
+            message.append("release-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 
     virtual bool tryCancel(const char c, StateType type) {
         if (type != this->type) { // cannot cancel unless current state is same type
             return false;
         }
-        return LineEditUtils::contains(c, hookChars.c_str());
+        if (LineEditUtils::contains(c, hookChars.c_str())) {
+            message.append("cancel-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 
 };
@@ -147,7 +165,7 @@ public:
 class StateInBrackets : public EditorState {
 public:
 
-    StateInBrackets() {
+    StateInBrackets() : EditorState() {
         hookChars = "(";
         releaseChars = ")";
         description = "inBrackets";
@@ -156,31 +174,43 @@ public:
 
     virtual bool tryHook(std::string cmd, StateType type) {
         // brackets can be nested, but not triggered in middle of a string
-        if(type == ST_STRING){
+        if (type == ST_STRING) {
             return false;
         }
-        return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
+        if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
+            message.append("hook-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 
     virtual bool tryRelease(std::string cmd, StateType type) {
         if (type != this->type) { // cannot release unless current state is same type
             return false;
         }
-        return LineEditUtils().lastCharContains(cmd, releaseChars.c_str());
+        if (LineEditUtils().lastCharContains(cmd, releaseChars.c_str())) {
+            message.append("release-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 
     virtual bool tryCancel(const char c, StateType type) {
         if (type != this->type) { // cannot cancel unless current state is same type
             return false;
         }
-        return LineEditUtils::contains(c, hookChars.c_str());
+        if (LineEditUtils::contains(c, hookChars.c_str())) {
+            message.append("cancel-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 };
 
 class StateInAssignment : public EditorState {
 public:
 
-    StateInAssignment() {
+    StateInAssignment() : EditorState() {
         hookChars = "=";
         releaseChars = "any command releases this state";
         description = "inAssignment";
@@ -193,13 +223,18 @@ public:
                 ) {
             return false;
         }
-        return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
+        if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
+            message.append("hook-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 
     virtual bool tryRelease(std::string cmd, StateType type) {
         if (type != this->type) { // cannot release unless current state is same type
             return false;
         }
+        message.append("release-").append(description).append(nl);
         return true;
     }
 
@@ -207,14 +242,18 @@ public:
         if (type != this->type) { // cannot cancel unless current state is same type
             return false;
         }
-        return LineEditUtils::contains(c, hookChars.c_str());
+        if (LineEditUtils::contains(c, hookChars.c_str())) {
+            message.append("cancel-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 };
 
 class StateListingMembers : public EditorState {
 public:
 
-    StateListingMembers() {
+    StateListingMembers() : EditorState() {
         hookChars = ".";
         releaseChars = "any command releases this state";
         description = "inListingMembers";
@@ -228,13 +267,18 @@ public:
             return false;
         }
 
-        return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
+        if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
+            message.append("hook-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 
     virtual bool tryRelease(std::string cmd, StateType type) {
         if (type != this->type) { // cannot release unless current state is same type
             return false;
         }
+        message.append("release-").append(description).append(nl);
         return true;
     }
 
@@ -242,7 +286,11 @@ public:
         if (type != this->type) { // cannot cancel unless current state is same type
             return false;
         }
-        return LineEditUtils::contains(c, hookChars.c_str());
+        if (LineEditUtils::contains(c, hookChars.c_str())) {
+            message.append("cancel-").append(description).append(nl);
+            return true;
+        }
+        return false;
     }
 };
 
