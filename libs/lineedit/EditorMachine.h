@@ -14,8 +14,6 @@ typedef std::vector<EditorState*> StatePointer;
 typedef std::vector<std::string> StringVector;
 
 class EditorMachine {
-    
-
 public:
 
     EditorMachine() {
@@ -35,47 +33,50 @@ public:
         queuedStates->push_back(defaultState);
     }
 
-    void deleteChar(){
-        if(cmd.size() <= 0){
+    void deleteChar() {
+        if (cmd.size() <= 0) {
             reset();
             return;
         }
-        const char c = cmd.at(cmd.size() -1);
+        const char c = cmd.at(cmd.size() - 1);
         StateType type = queuedStates->back()->getType();
-        
+
         // cancel state
         if (queuedStates->back()->tryCancel(c, type)) {
-            queuedStates->pop_back();    
+            queuedStates->pop_back();
             linePos.pop_back();
         }
-        
-        cmd = cmd.substr(0, cmd.size() -1);
-        
+
+        cmd = cmd.substr(0, cmd.size() - 1);
+
     }
+
     /**
      * Processes the whole command buffer and changes the state of machine accordingly
      * @param buf user input, must be null terminated
      * @return boolean weather the input has added a new state
      */
     bool processInput(std::string buf) {
-        
+
         if (buf.size() <= 0) {
             return false;
         }
 
         // extract the unprocessed string
         cmd = buf.substr(linePos.back(), buf.size());
-        std::string subject = LineEditUtils().extractSubject(cmd); 
-        linePos.push_back(buf.size()); // update line position
+        std::string subject = LineEditUtils().extractSubject(cmd);
+        
 
         StateType type = (queuedStates->back())->getType();
+        bool stateReleased = false;
 
         // release state
         if (queuedStates->back()->tryRelease(cmd, type)) {
             queuedStates->pop_back();
-            //return false;  
+            stateReleased = true;
         }
 
+        bool stateTriggered = true;
         // set new state
         if (stateInAssignment.tryHook(cmd, type)) {
             addState(new StateInAssignment(), subject);
@@ -90,10 +91,16 @@ public:
             addState(new StateListingMembers(), subject);
 
         } else {
-            return false;
+            stateTriggered = false;
         }
 
-        return true;
+        // update linePos if any change in state happened
+        if(stateReleased || stateTriggered){
+            linePos.push_back(buf.size()); 
+        }
+
+        // return true only if new state was added
+        return stateTriggered;
     }
 
     std::string getCmd() const {
@@ -107,8 +114,8 @@ public:
     StatePointer* getStateQueue() const {
         return queuedStates;
     }
-    
-    EditorState* getCurrentState(){
+
+    EditorState* getCurrentState() {
         return queuedStates->back();
     }
 
@@ -127,7 +134,7 @@ private:
     StateInBrackets stateInBrackets;
     StateInString stateInString;
     StateListingMembers stateListingMembers;
-    
+
     void addState(EditorState* e, std::string subject) {
         e->setSubject(subject);
         queuedStates->push_back(e);

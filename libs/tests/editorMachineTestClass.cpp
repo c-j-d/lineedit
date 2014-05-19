@@ -28,9 +28,10 @@ void editorMachineTestClass::testGetCmd() {
     std::string expected = "12345";
     CPPUNIT_ASSERT_EQUAL(expected, result);
 
-    editorMachine.processInput("12345abc");
+    editorMachine.processInput("12345("); // triger bracket state
+    editorMachine.processInput("12345(abc"); // append some chars that will not trigger new state
     result = editorMachine.getCmd();
-    expected = "abc";
+    expected = "abc"; // check that only chars entered after a state change is processed
     CPPUNIT_ASSERT_EQUAL(expected, result);
 
     editorMachine.processInput(""); // should never happen, still... 
