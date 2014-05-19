@@ -28,14 +28,16 @@ public:
      * Run this method for each new context
      */
     void reset(void) { // resets to default state (new line)
-        linePos = 0;
+        linePos.clear();
+        linePos.push_back(0);
         cmd = "";
         queuedStates->clear();
         queuedStates->push_back(defaultState);
     }
 
     void deleteChar(){
-        if(linePos <= 0){
+        if(cmd.size() <= 0){
+            reset();
             return;
         }
         const char c = cmd.at(cmd.size() -1);
@@ -43,12 +45,11 @@ public:
         
         // cancel state
         if (queuedStates->back()->tryCancel(c, type)) {
-            queuedStates->pop_back();            
+            queuedStates->pop_back();    
+            linePos.pop_back();
         }
         
         cmd = cmd.substr(0, cmd.size() -1);
-        
-        linePos --;
         
     }
     /**
@@ -63,9 +64,9 @@ public:
         }
 
         // extract the unprocessed string
-        cmd = buf.substr(linePos, buf.size());
+        cmd = buf.substr(linePos.back(), buf.size());
         std::string subject = LineEditUtils().extractSubject(cmd); 
-        linePos = buf.size(); // update line position
+        linePos.push_back(buf.size()); // update line position
 
         StateType type = (queuedStates->back())->getType();
 
@@ -100,7 +101,7 @@ public:
     }
 
     unsigned int getLinePos() const {
-        return linePos;
+        return linePos.back();
     }
 
     StatePointer* getStateQueue() const {
@@ -113,7 +114,7 @@ public:
 
 private:
 
-    unsigned int linePos; // position on command line that was last processed
+    std::vector<int> linePos; // position on command line that was last processed
     std::string cmd; // the part of the command line that are currently being processed
 
     StatePointer *queuedStates; // states can overlap, and are stored in this queue

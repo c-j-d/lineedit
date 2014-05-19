@@ -150,14 +150,14 @@ void editorMachineTestClass::testDeleteChar() {
     t = ST_BRACKET;
     rt = editorMachine.getCurrentState()->getType();
     CPPUNIT_ASSERT_EQUAL(t, rt);
-    unsigned int linePos = editorMachine.getLinePos();
+    unsigned int linePos = 0;
     
     // test delete
     editorMachine.deleteChar();
     t = ST_IDLE;
     rt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(t, rt);    
-    CPPUNIT_ASSERT_EQUAL(linePos -1 , editorMachine.getLinePos());
+    CPPUNIT_ASSERT_EQUAL(linePos, editorMachine.getLinePos());
     cmd  = "func";
     CPPUNIT_ASSERT_EQUAL(cmd, editorMachine.getCmd());
     
