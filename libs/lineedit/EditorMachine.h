@@ -38,22 +38,23 @@ public:
         writeMessage("Reset", defaultState);
     }
 
-    void deleteChar() {
-        if (cmd.size() <= 0) {
+    /**
+     * LinePos<> hold the positions where a state was triggered. When deleting
+     * past that point, the state triggered can be safely canceled.
+     * 
+     * @param buf
+     */
+    void deleteChar(std::string buf) {
+        if (cmd.size() <= 0 || buf.size() <= 0 || linePos.back() <= 0 || linePos.size() <= 1) {
             reset();
             return;
         }
-        const char c = cmd.at(cmd.size() - 1);
-        StateType type = queuedStates->back()->getType();
-
-        // cancel state
-        if (queuedStates->back()->tryCancel(c, type)) {
+        
+        if(linePos.back() > buf.size()){
             cancelState(queuedStates->back());
             linePos.pop_back();
+            cmd = cmd.substr(0, linePos.back());
         }
-
-        cmd = cmd.substr(0, cmd.size() - 1);
-
     }
 
     /**

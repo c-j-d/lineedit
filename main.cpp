@@ -124,7 +124,8 @@ int clrCallback(const char *buf, size_t len, char c) {
 
 /* callback for back space */
 int backspaceCallback(const char *buf, size_t len, char c) {
-    em.deleteChar();
+    
+    em.deleteChar(buf);
     return 0;
 
 }
@@ -187,9 +188,9 @@ int main(int argc, char **argv) {
     //linenoiseSetCharacterCallback(listSeparatorCallback, ',');
 
     linenoiseSetCharacterCallback(escapeCallback, 27);
-    linenoiseSetCharacterCallback(backspaceCallback, '\b');
-    linenoiseSetCharacterCallback(backspaceCallback, 8);
-    linenoiseSetCharacterCallback(backspaceCallback, (char)8);
+    linenoiseSetCharacterCallback(backspaceCallback, ctrl('H')); // sometimes works in netbeans pseudo terminal
+    linenoiseSetCharacterCallback(backspaceCallback, 0x7f); // works in gnome terminal
+    linenoiseSetCharacterCallback(backspaceCallback, 8); // 
 
 
     /* Load history from file. The history file is just a plain text file

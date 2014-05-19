@@ -119,14 +119,14 @@
 //    #define	STDERR_FILENO	2	/* Standard error output.  */
 
 #else
-    #include <termios.h>
-    #include <sys/ioctl.h>
-    #include <sys/poll.h>
-    #define USE_TERMIOS
-    #define HAVE_UNISTD_H
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <sys/poll.h>
+#define USE_TERMIOS
+#define HAVE_UNISTD_H
 #endif
 #ifdef HAVE_UNISTD_H
-    #include <unistd.h>
+#include <unistd.h>
 #endif
 
 #include <stdlib.h>
@@ -198,7 +198,7 @@ static int getWindowSize(struct current *current);
 
 /* Clear the screen. Used to handle ctrl+l */
 void linenoiseClearScreen(void) {
-    if (write(STDOUT_FILENO,"\x1b[H\x1b[2J",7) <= 0) {
+    if (write(STDOUT_FILENO, "\x1b[H\x1b[2J", 7) <= 0) {
         /* nothing to do, just to avoid warning. */
     }
 }
@@ -878,7 +878,6 @@ static void refreshLine(const char *prompt, struct current *current) {
     setCursorPos(current, pos + pchars + backup);
 }
 
-
 static void set_current(struct current *current, const char *str) {
     strncpy(current->buf, str, current->bufmax);
     current->buf[current->bufmax - 1] = 0;
@@ -1154,7 +1153,10 @@ process_char:
                 if (remove_char(current, current->pos - 1) == 1) {
                     refreshLine(current->prompt, current);
                 }
-                //break;
+                if (characterCallback[(int) c]) {
+                    characterCallback[(int) c](current->buf, current->len, c);
+                }
+                break;
             case ctrl('D'): /* ctrl-d */
                 if (current->len == 0) {
                     /* Empty line, so EOF */
@@ -1612,17 +1614,18 @@ char **linenoiseHistory(int *len) {
     return history;
 }
 
-
-struct current *linenoiceGetcurrent(){
+struct current *linenoiceGetcurrent() {
     return _current;
 }
-void linenoiceCursorToLeft(){
+
+void linenoiceCursorToLeft() {
     cursorToLeft(_current);
 }
-void linenoiceSetCursorPos(int x){
+
+void linenoiceSetCursorPos(int x) {
     setCursorPos(_current, x);
 }
 
-void linenoiceAppendCommand(const char *cmd){
+void linenoiceAppendCommand(const char *cmd) {
     insert_chars(_current, _current->pos, cmd);
 }

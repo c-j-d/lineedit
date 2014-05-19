@@ -18,8 +18,6 @@ class EditorState {
 public:
 
     EditorState() {
-        message = "";
-        nl = "\n";
     }
 
     std::string getDescription() {
@@ -46,14 +44,6 @@ public:
      */
     virtual bool tryHook(std::string cmd, StateType type) = 0;
 
-    /**
-     * Tells if a deleted character should cancel this state
-     * @param cmd
-     * @param type
-     * @return 
-     */
-    virtual bool tryCancel(const char c, StateType type) = 0;
-
     StringVector getCompletions() {
         return completions;
     }
@@ -77,10 +67,6 @@ public:
         return subject;
     }
 
-    std::string getMessage() const {
-        return message;
-    }
-
 protected:
 
     StringVector completions;
@@ -90,9 +76,6 @@ protected:
     std::string subject; /** for example the function name **/
     std::string description;
     StateType type;
-    std::string message;
-    std::string nl;
-
 };
 
 class StateIdle : public EditorState {
@@ -132,7 +115,6 @@ public:
             return false;
         }
         if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
-            message.append("hook-").append(description).append(nl);
             return true;
         }
         return false;
@@ -143,23 +125,10 @@ public:
             return false;
         }
         if (LineEditUtils().lastCharContains(cmd, releaseChars.c_str())) {
-            message.append("release-").append(description).append(nl);
             return true;
         }
         return false;
     }
-
-    virtual bool tryCancel(const char c, StateType type) {
-        if (type != this->type) { // cannot cancel unless current state is same type
-            return false;
-        }
-        if (LineEditUtils::contains(c, hookChars.c_str())) {
-            message.append("cancel-").append(description).append(nl);
-            return true;
-        }
-        return false;
-    }
-
 };
 
 class StateInBrackets : public EditorState {
@@ -178,7 +147,6 @@ public:
             return false;
         }
         if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
-            message.append("hook-").append(description).append(nl);
             return true;
         }
         return false;
@@ -189,18 +157,6 @@ public:
             return false;
         }
         if (LineEditUtils().lastCharContains(cmd, releaseChars.c_str())) {
-            message.append("release-").append(description).append(nl);
-            return true;
-        }
-        return false;
-    }
-
-    virtual bool tryCancel(const char c, StateType type) {
-        if (type != this->type) { // cannot cancel unless current state is same type
-            return false;
-        }
-        if (LineEditUtils::contains(c, hookChars.c_str())) {
-            message.append("cancel-").append(description).append(nl);
             return true;
         }
         return false;
@@ -224,7 +180,6 @@ public:
             return false;
         }
         if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
-            message.append("hook-").append(description).append(nl);
             return true;
         }
         return false;
@@ -234,19 +189,7 @@ public:
         if (type != this->type) { // cannot release unless current state is same type
             return false;
         }
-        message.append("release-").append(description).append(nl);
         return true;
-    }
-
-    virtual bool tryCancel(const char c, StateType type) {
-        if (type != this->type) { // cannot cancel unless current state is same type
-            return false;
-        }
-        if (LineEditUtils::contains(c, hookChars.c_str())) {
-            message.append("cancel-").append(description).append(nl);
-            return true;
-        }
-        return false;
     }
 };
 
@@ -268,7 +211,6 @@ public:
         }
 
         if (LineEditUtils().lastCharContains(cmd, hookChars.c_str())) {
-            message.append("hook-").append(description).append(nl);
             return true;
         }
         return false;
@@ -278,19 +220,7 @@ public:
         if (type != this->type) { // cannot release unless current state is same type
             return false;
         }
-        message.append("release-").append(description).append(nl);
         return true;
-    }
-
-    virtual bool tryCancel(const char c, StateType type) {
-        if (type != this->type) { // cannot cancel unless current state is same type
-            return false;
-        }
-        if (LineEditUtils::contains(c, hookChars.c_str())) {
-            message.append("cancel-").append(description).append(nl);
-            return true;
-        }
-        return false;
     }
 };
 

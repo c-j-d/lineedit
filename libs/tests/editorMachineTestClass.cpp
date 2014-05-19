@@ -154,7 +154,7 @@ void editorMachineTestClass::testDeleteChar() {
     unsigned int linePos = 0;
     
     // test delete
-    editorMachine.deleteChar();
+    editorMachine.deleteChar("func");
     t = ST_IDLE;
     rt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(t, rt);    

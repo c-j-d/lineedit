@@ -9,6 +9,6 @@
 #include <iostream>
 
 void Observer::eventStateChanged(){
-    std::cout << "Observer notified that state changed" << std::endl;
+    //std::cout << "Observer notified that state changed" << std::endl;
 }
 
