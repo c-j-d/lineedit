@@ -19,7 +19,7 @@ public:
     EditorMachine() {
         defaultState = new StateIdle();
         queuedStates = new StatePointer();
-        nl = "\n";
+        nl = "\n\r";
         this->reset();
     }
 
@@ -45,7 +45,7 @@ public:
 
         // cancel state
         if (queuedStates->back()->tryCancel(c, type)) {
-            writeMessage(queuedStates->back());
+            writeMessage("cancel", queuedStates->back());
             queuedStates->pop_back();
             linePos.pop_back();
         }
@@ -75,7 +75,7 @@ public:
 
         // release state
         if (queuedStates->back()->tryRelease(cmd, type)) {
-            writeMessage(queuedStates->back());
+            writeMessage("release", queuedStates->back());
             queuedStates->pop_back();
             stateReleased = true;
         }
@@ -144,18 +144,19 @@ private:
     StateInString stateInString;
     StateListingMembers stateListingMembers;
     
-    void writeMessage(EditorState *state){
+    void writeMessage(std::string m, EditorState *state){
         std::string tab = "";
         for(int i = 0; i < queuedStates->size(); i++){
             tab.append("..");
         }
-        message.append(tab).append(state->getMessage()).append(nl);
+        //message.append(tab).append(state->getMessage()).append(nl);
+        message.append(tab).append(m).append("-").append(state->getDescription()).append(nl);
     }
 
     void addState(EditorState* e, std::string subject) {
         e->setSubject(subject);
         queuedStates->push_back(e);
-        writeMessage(e);
+        writeMessage("add", e);
     }
 };
 
