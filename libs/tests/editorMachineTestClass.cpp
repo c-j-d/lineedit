@@ -47,9 +47,9 @@ void editorMachineTestClass::testGetLinePos() {
 }
 
 void editorMachineTestClass::testGetStateQueue() {
-    EditorMachine editorMachine;
-    StatePointer result = editorMachine.getStateQueue();
-    CPPUNIT_ASSERT(true);
+//    EditorMachine editorMachine;
+//    StatePointer result = editorMachine.getStateQueue();
+//    CPPUNIT_ASSERT(true);
 
 }
 
@@ -61,7 +61,7 @@ void editorMachineTestClass::testProcessInput() {
     buf = "bogus";
     CPPUNIT_ASSERT(!editorMachine.processInput(buf.c_str())); // shouldn't change state
     StateType st = ST_IDLE;
-    StateType rSt = (editorMachine.getStateQueue().back())->getType();
+    StateType rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
     
 
@@ -70,18 +70,18 @@ void editorMachineTestClass::testProcessInput() {
     buf += " funcX(";
     CPPUNIT_ASSERT(editorMachine.processInput(buf.c_str())); // should change state
     st = ST_BRACKET;
-    rSt = (editorMachine.getStateQueue().back())->getType();
+    rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
     
     std::string subject = "funcX";
-    std::string rSubject = (editorMachine.getStateQueue().back())->getSubject();
+    std::string rSubject = (editorMachine.getCurrentState())->getSubject();
     CPPUNIT_ASSERT_EQUAL(subject, rSubject);
 
     // simulate end of function
     buf += " parameterValue )";
     CPPUNIT_ASSERT(!editorMachine.processInput(buf.c_str())); // should release state back to idle
     st = ST_IDLE;
-    rSt = (editorMachine.getStateQueue().back())->getType();
+    rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
     
     
@@ -90,11 +90,11 @@ void editorMachineTestClass::testProcessInput() {
     buf += " (";
     CPPUNIT_ASSERT(editorMachine.processInput(buf.c_str())); // should change state
     st = ST_BRACKET;
-    rSt = (editorMachine.getStateQueue().back())->getType();
+    rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
     
     subject = "";
-    rSubject = (editorMachine.getStateQueue().back())->getSubject();
+    rSubject = (editorMachine.getCurrentState())->getSubject();
     CPPUNIT_ASSERT_EQUAL(subject, rSubject);
     
     
@@ -103,19 +103,19 @@ void editorMachineTestClass::testProcessInput() {
     CPPUNIT_ASSERT(editorMachine.processInput(buf.c_str())); // should change state, should be two levels of bracket state now
     
     st = ST_BRACKET;
-    rSt = (editorMachine.getStateQueue().back())->getType();
+    rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);    
     
     buf += " foo )";
     CPPUNIT_ASSERT(!editorMachine.processInput(buf.c_str())); // exit first parenthesis
     st = ST_BRACKET;
-    rSt = (editorMachine.getStateQueue().back())->getType();
+    rSt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(st, rSt);
     
     buf += " foo )";
     CPPUNIT_ASSERT(!editorMachine.processInput(buf.c_str())); // exit second parenthesis
     st = ST_IDLE;
-    rSt = (editorMachine.getStateQueue().back())->getType();  // should have gotten back to idle state
+    rSt = (editorMachine.getCurrentState())->getType();  // should have gotten back to idle state
     CPPUNIT_ASSERT_EQUAL(st, rSt);
 
 }
@@ -126,7 +126,7 @@ void editorMachineTestClass::testReset() {
     editorMachine.reset();
 
     StateType t = ST_IDLE;
-    StateType rt = (editorMachine.getStateQueue().back())->getType();
+    StateType rt = (editorMachine.getCurrentState())->getType();
     CPPUNIT_ASSERT_EQUAL(t, rt);
 
 
@@ -137,5 +137,29 @@ void editorMachineTestClass::testReset() {
     unsigned int z = 0;
     unsigned int r = editorMachine.getLinePos();
     CPPUNIT_ASSERT_EQUAL(z, r);
+}
+
+void editorMachineTestClass::testDeleteChar() {
+    EditorMachine editorMachine;
+    StateType t;
+    StateType rt;
+    std::string cmd; 
+    
+    editorMachine.processInput("func(");
+    
+    t = ST_BRACKET;
+    rt = (editorMachine.getCurrentState())->getType();
+    CPPUNIT_ASSERT_EQUAL(t, rt);
+    unsigned int linePos = editorMachine.getLinePos();
+    
+    // test delete
+    editorMachine.deleteChar();
+    t = ST_IDLE;
+    rt = (editorMachine.getCurrentState())->getType();
+    CPPUNIT_ASSERT_EQUAL(t, rt);    
+    CPPUNIT_ASSERT_EQUAL(linePos -1 , editorMachine.getLinePos());
+    cmd  = "func";
+    CPPUNIT_ASSERT_EQUAL(cmd, std::string(editorMachine.getCmd()));
+    
 }
 

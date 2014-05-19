@@ -14,8 +14,7 @@ enum StateType{ST_IDLE, ST_STRING, ST_BRACKET, ST_ASSIGNMENT, ST_LISTMEMBERS};
 
 class EditorState {
     
-public:   
-    
+public:       
 
     EditorState(void) {
 
@@ -44,6 +43,14 @@ public:
      * @return 
      */
     virtual bool tryHook(const char* cmd, StateType type) = 0;
+    
+    /**
+     * Tells if a deleted character should cancel this state
+     * @param cmd
+     * @param type
+     * @return 
+     */
+    virtual bool tryCancel(const char c, StateType type) = 0;
 
     StringVector getCompletions() {
         return completions;
@@ -96,6 +103,10 @@ public:
     virtual bool tryRelease(const char* cmd, StateType type) {
         return false; // cannot be released
     }
+    
+    virtual bool tryCancel(const char c, StateType type) {
+        return false; // cannot be canceled
+    }
 
 };
 
@@ -122,6 +133,13 @@ public:
         }
         return LineEditUtils().lastCharContains(cmd, releaseChars.c_str());
     }
+    
+    virtual bool tryCancel(const char c, StateType type) {
+        if (type != this->type){ // cannot cancel unless current state is same type
+            return false;
+        }
+        return LineEditUtils::contains(c, hookChars.c_str());
+    }
 
 };
 
@@ -140,12 +158,18 @@ public:
         return LineEditUtils().lastCharContains(cmd, hookChars.c_str());
     }
 
-    virtual bool tryRelease(const char* cmd, StateType type) {
-        
+    virtual bool tryRelease(const char* cmd, StateType type) {       
         if (type != this->type){ // cannot release unless current state is same type
             return false;
         }
         return LineEditUtils().lastCharContains(cmd, releaseChars.c_str());
+    }
+    
+    virtual bool tryCancel(const char c, StateType type) {
+        if (type != this->type){ // cannot cancel unless current state is same type
+            return false;
+        }
+        return LineEditUtils::contains(c, hookChars.c_str());
     }
 };
 
@@ -172,6 +196,13 @@ public:
         }
         return true;
     }
+    
+    virtual bool tryCancel(const char c, StateType type) {
+        if (type != this->type){ // cannot cancel unless current state is same type
+            return false;
+        }
+        return LineEditUtils::contains(c, hookChars.c_str());
+    }
 };
 
 class StateListingMembers : public EditorState {
@@ -196,6 +227,13 @@ public:
             return false;
         }
         return true;
+    }
+    
+    virtual bool tryCancel(const char c, StateType type) {
+        if (type != this->type){ // cannot cancel unless current state is same type
+            return false;
+        }
+        return LineEditUtils::contains(c, hookChars.c_str());
     }
 };
 

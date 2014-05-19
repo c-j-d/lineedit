@@ -17,6 +17,7 @@ class utilsTestClass : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testCharLen);
     CPPUNIT_TEST(testContains);
     CPPUNIT_TEST(testGetTail);
+    CPPUNIT_TEST(testPopChar);
     CPPUNIT_TEST(testLastCharContains);
     CPPUNIT_TEST(testExtractSubject);
 
@@ -33,6 +34,7 @@ private:
     void testCharLen();
     void testContains();
     void testGetTail();
+    void testPopChar();
     void testLastCharContains();
     void testExtractSubject();
 

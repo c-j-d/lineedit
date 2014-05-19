@@ -16,19 +16,14 @@ public:
     }
 
     static unsigned int charLen(const char* buf) { // must be a null terminated char pointer
-        int max = 10000;
-        int i = 0;
-        while ((buf[i++] != '\0') && (i < max));
-
-        if (i == max) {
-            // throw error
-        }
-        return (i - 1);
+        std::string s(buf);
+        return s.size();
     }
 
     static bool contains(char c, const char* buf) {
-        for (unsigned int i = 0; i < charLen(buf); i++) {
-            if (buf[i] == c) {
+        std::string s(buf);        
+        for (unsigned int i = 0; i < s.size(); i++) {
+            if (s.at(i) == c) {
                 return true;
             }
         }
@@ -40,6 +35,24 @@ public:
             return false;
         }
         return contains(buf[charLen(buf) - 1], test);
+    }
+    
+    static const char* popChar(const char* buf){
+        std::string s(buf);
+        if(s.size() <= 1){
+            return s.c_str();
+        }
+        return s.substr(0, s.size()-1).c_str();
+    }
+    
+    /**
+     * Get last char
+     * @param buf
+     * @return 
+     */
+    static const char getTail(const char* buf){
+        std::string s(buf);
+        return s.at(s.size()-1);
     }
 
     static const char* getTail(const char* buf, int fromPosition) {

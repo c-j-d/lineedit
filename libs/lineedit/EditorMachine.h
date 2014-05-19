@@ -14,37 +14,45 @@ typedef std::vector<EditorState*> StatePointer;
 typedef std::vector<std::string> StringVector;
 
 class EditorMachine {
-    unsigned int linePos; // position on command line that was last processed
-    const char* cmd; // the part of the command line that are currently being processed
-
-    StatePointer queuedStates; // states can overlap, and are stored in this queue
-
-    EditorState* defaultState;
-
-    // the states this machine can be in
-    StateIdle stateIdle;
-    StateInAssignment stateInAssignment;
-    StateInBrackets stateInBrackets;
-    StateInString stateInString;
-    StateListingMembers stateListingMembers;
+    
 
 public:
 
     EditorMachine() {
         defaultState = new StateIdle();
+        queuedStates = new StatePointer();
         this->reset();
     }
 
     /**
-     * Run this method for each new context ( new line )
+     * Run this method for each new context
      */
     void reset(void) { // resets to default state (new line)
         linePos = 0;
         cmd = 0;
-        queuedStates.clear();
-        queuedStates.push_back(defaultState);
+        queuedStates->clear();
+        queuedStates->push_back(defaultState);
     }
 
+    void deleteChar(){
+        if(linePos <= 0){
+            return;
+        }
+        const char c = LineEditUtils::getTail(cmd);
+        StateType type = queuedStates->back()->getType();
+        
+        // cancel state
+        if (queuedStates->back()->tryCancel(c, type)) {
+            queuedStates->pop_back();            
+        }
+        
+        cmd = LineEditUtils::popChar(cmd);
+        
+        if(LineEditUtils::charLen(cmd) < linePos){
+            linePos = LineEditUtils::charLen(cmd);
+        }
+        
+    }
     /**
      * Processes the whole command buffer and changes the state of machine accordingly
      * @param buf user input, must be null terminated
@@ -62,11 +70,11 @@ public:
         std::string subject = LineEditUtils().extractSubject(_cmd.c_str()); // might be handy
         linePos = LineEditUtils().charLen(buf); // update line position
 
-        StateType type = (queuedStates.back())->getType();
+        StateType type = (queuedStates->back())->getType();
 
         // release state
-        if ((queuedStates.back())->tryRelease(_cmd.c_str(), type)) {
-            queuedStates.pop_back();
+        if (queuedStates->back()->tryRelease(_cmd.c_str(), type)) {
+            queuedStates->pop_back();
             //return false;  
         }
 
@@ -98,19 +106,33 @@ public:
         return linePos;
     }
 
-    StatePointer getStateQueue() const {
+    StatePointer* getStateQueue() const {
         return queuedStates;
     }
     
     EditorState* getCurrentState(){
-        return queuedStates.back();
+        return queuedStates->back();
     }
 
 private:
 
+    unsigned int linePos; // position on command line that was last processed
+    const char* cmd; // the part of the command line that are currently being processed
+
+    StatePointer *queuedStates; // states can overlap, and are stored in this queue
+
+    EditorState* defaultState;
+
+    // the states this machine can be in
+    StateIdle stateIdle;
+    StateInAssignment stateInAssignment;
+    StateInBrackets stateInBrackets;
+    StateInString stateInString;
+    StateListingMembers stateListingMembers;
+    
     void addState(EditorState* e, std::string subject) {
         e->setSubject(subject);
-        queuedStates.push_back(e);
+        queuedStates->push_back(e);
     }
 };
 

@@ -15,13 +15,26 @@ class newtestclass1 : public CPPUNIT_NS::TestFixture {
 
     CPPUNIT_TEST(testTryHookAssignment);
     CPPUNIT_TEST(testTryReleaseAssignment);
+    CPPUNIT_TEST(testTryCancelAssignment);
+    
     CPPUNIT_TEST(testTryHookIdle);
     CPPUNIT_TEST(testTryReleaseIdle);
+    CPPUNIT_TEST(testTryCancelIdle);
+    
     CPPUNIT_TEST(testTryHookString);
     CPPUNIT_TEST(testTryReleaseString);
+    CPPUNIT_TEST(testTryCancelString);
+    
     CPPUNIT_TEST(testTryHookBrackets);
     CPPUNIT_TEST(testTryReleaseBrackets);
+    CPPUNIT_TEST(testTryCancelBrackets);
+    
+    CPPUNIT_TEST(testTryHookListMembers);
+    CPPUNIT_TEST(testTryReleaseListMembers);
+    CPPUNIT_TEST(testTryCancelListMembers);
+    
     CPPUNIT_TEST(testSetGetSubject);
+    
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -34,12 +47,24 @@ public:
 private:
     void testTryHookAssignment();
     void testTryReleaseAssignment();
+    void testTryCancelAssignment();
+    
     void testTryHookIdle();
     void testTryReleaseIdle();
+    void testTryCancelIdle();
+    
     void testTryHookString();
     void testTryReleaseString();
+    void testTryCancelString();
+    
     void testTryHookBrackets();
     void testTryReleaseBrackets();
+    void testTryCancelBrackets();
+    
+    void testTryHookListMembers();
+    void testTryReleaseListMembers();
+    void testTryCancelListMembers();
+    
     void testSetGetSubject();
 
 };

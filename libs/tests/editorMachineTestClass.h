@@ -18,6 +18,7 @@ class editorMachineTestClass : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(testGetStateQueue);
     CPPUNIT_TEST(testProcessInput);
     CPPUNIT_TEST(testReset);
+    CPPUNIT_TEST(testDeleteChar);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -33,6 +34,7 @@ private:
     void testGetStateQueue();
     void testProcessInput();
     void testReset();
+    void testDeleteChar();
 
 };
 

@@ -65,6 +65,21 @@ void utilsTestClass::testGetTail() {
     const char* result = LineEditUtils().getTail(buf, fromPosition);
 
     CPPUNIT_ASSERT_EQUAL(std::string(result), std::string(test));
+    
+    // test overloaded
+    
+    const char c = LineEditUtils().getTail(buf);
+    const char t = '4';
+    CPPUNIT_ASSERT_EQUAL(c, t);
+
+}
+
+void utilsTestClass::testPopChar() {
+    const char* buf = "01234";
+    const char* test = "0123";
+    const char* result = LineEditUtils().popChar(buf);
+
+    CPPUNIT_ASSERT_EQUAL(std::string(result), std::string(test));
 
 }
 
